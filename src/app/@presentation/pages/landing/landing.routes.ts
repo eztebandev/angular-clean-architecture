@@ -6,15 +6,17 @@ import { PostComponent } from "./pages/post/post.component";
 export const landingRoutes: Routes = [
   { 
     path: '', 
-    component: LandingComponent 
-  }, 
-  { 
-    path: 'list-posts', 
-    component: ListPostsComponent 
-  },
-  { 
-    path: 'post/:id', 
-    component: PostComponent 
+    component: LandingComponent,
+    children: [
+      {
+        path: '',
+        component: ListPostsComponent
+      },
+      {
+        path: 'post/:id',
+        component: PostComponent
+      }
+    ]
   },
   { 
     path: '**', 

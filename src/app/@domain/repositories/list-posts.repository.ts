@@ -1,4 +1,3 @@
-import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ListPostsResponseDto } from '../../@data/dtos/list-posts/list-posts.response.dto';
 

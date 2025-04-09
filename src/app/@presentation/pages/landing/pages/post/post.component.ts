@@ -1,8 +1,11 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Post } from '../../../../interfaces/post.interface'
+import { Post } from '../../../../interfaces/post.interface';
+import { Comment } from '../../../../interfaces/comment.interface';
 import { Router } from '@angular/router';
 import { PostOneUseCase } from '../../../../../@domain/usecases/post-one/post-one.usecase';
+import { switchMap } from 'rxjs/operators';
+import { CommentsOneUseCase } from '../../../../../@domain/usecases/comments-one/comments-one.usecase';
 
 @Component({
   selector: 'app-post',
@@ -19,25 +22,35 @@ export class PostComponent {
     content: '',
     title: ''
   };
+  commentsPost: Comment[] = [];
   loading = true;
   error: string | null = null;
   constructor(
     private postOneCaseUse: PostOneUseCase,
+    private commentPostOneCaseUse: CommentsOneUseCase,
     private route: ActivatedRoute,
     private router: Router
   ) { }
 
   ngOnInit() {
-    this.route.params.subscribe((params) => {
-      console.log('params', Number(params['id']));
-      this.postOneCaseUse.execute({ id: Number(params['id']) }).subscribe((response) => {
-        this.dataPost = response;
+    let postId = 0;
+    this.route.params.pipe(
+      switchMap((params: any) => {
+        postId = Number(params['id']);
+        return this.postOneCaseUse.execute({ id: postId });
+      })
+    ).subscribe((response) => {
+      console.log('response', response);
+      this.dataPost = response;
+      this.commentPostOneCaseUse.execute(postId).subscribe((response) => {
+        console.log('response comments', response);
+        this.commentsPost = response;
         this.loading = false;
       });
     });
   }
 
   goBack() {
-    this.router.navigate(['/list-posts']);
+    this.router.navigate(['/']);
   }
 }
